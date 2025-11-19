@@ -1,0 +1,20 @@
+Best Hyperparameters for Node0 (GPU 0): {"n_units": 5000, "alpha": 0.1, "sigma_in": 0.1, "rho": 0.7000000000000001, "tikh": 0.1, "option": 3, "Normalization": 1}
+Lowest Loss for Node0: 5.077017467556288e-05
+Best Hyperparameters for Node9 (GPU 1): {"n_units": 1000, "alpha": 0.30000000000000004, "sigma_in": 0.30000000000000004, "rho": 0.30000000000000004, "tikh": 0.1, "option": 3, "Normalization": 1}
+Lowest Loss for Node9: 7.489266711218079e-05
+Best Hyperparameters for Node2 (GPU 2): {"n_units": 3000, "alpha": 0.5, "sigma_in": 0.30000000000000004, "rho": 0.8, "tikh": 0.1, "option": 4, "Normalization": 1}
+Lowest Loss for Node2: 1.2885770320281154e-05
+Best Hyperparameters for Node4 (GPU 0): {"n_units": 1000, "alpha": 0.7000000000000001, "sigma_in": 0.6, "rho": 0.1, "tikh": 0.1, "option": 4, "Normalization": 1}
+Lowest Loss for Node4: 9.510662025604688e-05
+Best Hyperparameters for Node1 (GPU 1): {"n_units": 3000, "alpha": 0.1, "sigma_in": 0.1, "rho": 0.5, "tikh": 0.1, "option": 3, "Normalization": 1}
+Lowest Loss for Node1: 4.2134283830819186e-05
+Best Hyperparameters for Node7 (GPU 3): {"n_units": 1000, "alpha": 0.5, "sigma_in": 0.2, "rho": 0.7000000000000001, "tikh": 0.1, "option": 5, "Normalization": 1}
+Lowest Loss for Node7: 3.169543842886924e-05
+Best Hyperparameters for Node6 (GPU 2): {"n_units": 1000, "alpha": 0.2, "sigma_in": 0.1, "rho": 0.2, "tikh": 0.1, "option": 3, "Normalization": 1}
+Lowest Loss for Node6: 4.233255676808767e-05
+Best Hyperparameters for Node5 (GPU 1): {"n_units": 1000, "alpha": 0.30000000000000004, "sigma_in": 0.2, "rho": 1.0, "tikh": 0.1, "option": 3, "Normalization": 1}
+Lowest Loss for Node5: 7.571728265247657e-05
+Best Hyperparameters for Node8 (GPU 0): {"n_units": 1000, "alpha": 0.1, "sigma_in": 0.30000000000000004, "rho": 0.9, "tikh": 0.1, "option": 4, "Normalization": 1}
+Lowest Loss for Node8: 4.932747378916247e-05
+Best Hyperparameters for Node3 (GPU 3): {"n_units": 2000, "alpha": 0.6, "sigma_in": 0.1, "rho": 0.1, "tikh": 0.1, "option": 3, "Normalization": 1}
+Lowest Loss for Node3: 8.815213477646467e-05

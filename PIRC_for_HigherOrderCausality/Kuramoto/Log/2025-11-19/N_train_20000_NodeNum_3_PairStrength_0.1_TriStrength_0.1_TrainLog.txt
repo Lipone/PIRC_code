@@ -1,0 +1,6 @@
+Best Hyperparameters for Node0 (GPU 0): {"n_units": 1000, "alpha": 0.1, "sigma_in": 0.1, "rho": 0.1, "tikh": 0.1, "option": 5, "Normalization": 1}
+Lowest Loss for Node0: 6.716925036016619e-05
+Best Hyperparameters for Node2 (GPU 2): {"n_units": 1000, "alpha": 0.6, "sigma_in": 0.30000000000000004, "rho": 0.6, "tikh": 0.1, "option": 3, "Normalization": 1}
+Lowest Loss for Node2: 7.25961235275463e-05
+Best Hyperparameters for Node1 (GPU 1): {"n_units": 1000, "alpha": 0.1, "sigma_in": 0.2, "rho": 0.30000000000000004, "tikh": 0.1, "option": 4, "Normalization": 1}
+Lowest Loss for Node1: 6.34175425147987e-05

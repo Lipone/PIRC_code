@@ -1,0 +1,27 @@
+nohup: ignoring input
+data already exists, loading from file.
+a2:
+ [[0.  0.  0. ]
+ [0.1 0.  0.1]
+ [0.1 0.  0. ]]
+a3:
+ [[[0.  0.  0. ]
+  [0.  0.  0.1]
+  [0.  0.  0. ]]
+
+ [[0.  0.  0.1]
+  [0.  0.  0. ]
+  [0.  0.  0. ]]
+
+ [[0.  0.1 0. ]
+  [0.  0.  0. ]
+  [0.  0.  0. ]]]
+Launching 3 tasks with up to 3 concurrent workers. GPUs: [0, 1, 2, 3]
+[I 2025-11-19 19:04:07,771] A new study created in RDB with name: node_0_N_train_20000_N_test_100_study
+[I 2025-11-19 19:04:07,781] A new study created in RDB with name: node_2_N_train_20000_N_test_100_study
+[I 2025-11-19 19:04:07,803] A new study created in RDB with name: node_1_N_train_20000_N_test_100_study
+[I 2025-11-19 19:04:58,894] Trial 0 finished with value: 1448.8286149978637 and parameters: {'n_units': 1000, 'alpha': 0.2, 'sigma_in': 0.1, 'rho': 0.30000000000000004, 'tikh': 0.001, 'option': 3, 'Normalization': 1}. Best is trial 0 with value: 1448.8286149978637.
+[I 2025-11-19 19:05:02,514] Trial 0 finished with value: 198.8900210380554 and parameters: {'n_units': 1000, 'alpha': 1.0, 'sigma_in': 0.6, 'rho': 0.30000000000000004, 'tikh': 0.1, 'option': 5, 'Normalization': 1}. Best is trial 0 with value: 198.8900210380554.
+[I 2025-11-19 19:05:31,307] Trial 0 finished with value: 2803.1310317993166 and parameters: {'n_units': 3000, 'alpha': 0.8, 'sigma_in': 0.9, 'rho': 0.5, 'tikh': 0.0001, 'option': 5, 'Normalization': 1}. Best is trial 0 with value: 2803.1310317993166.
+[I 2025-11-19 19:06:02,795] Trial 1 finished with value: 4570.570403289795 and parameters: {'n_units': 1000, 'alpha': 0.7000000000000001, 'sigma_in': 0.9, 'rho': 0.7000000000000001, 'tikh': 0.01, 'option': 3, 'Normalization': 1}. Best is trial 0 with value: 198.8900210380554.
+[I 2025-11-19 19:06:26,223] Trial 1 finished with value: 1294.3872275352478 and parameters: {'n_units': 3000, 'alpha': 0.5, 'sigma_in': 0.5, 'rho': 0.8, 'tikh': 0.01, 'option': 4, 'Normalization': 1}. Best is trial 1 with value: 1294.3872275352478.

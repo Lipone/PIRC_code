@@ -227,10 +227,32 @@ if __name__ == '__main__':
                         with open(data_file, "rb") as f:
                             a2, a3, data = pickle.load(f)
                     else:
-                        # generate_kuramoto_data must be available
+                        a2 = [
+                            [0.0, 0.0, 0.0],
+                            [1, 0.0, 1],
+                            [1, 0.0, 0.0]
+                        ]
+
+                        a3 = [
+                            [
+                                [0.0, 0.0, 0.0],
+                                [0.0, 0.0, 1],
+                                [0.0, 0.0, 0.0]
+                            ],
+                            [
+                                [0.0, 0.0, 0.0],
+                                [0.0, 0.0, 0.0],
+                                [0.0, 0.0, 0.0]
+                            ],
+                            [
+                                [0.0, 1, 0.0],
+                                [0.0, 0.0, 0.0],
+                                [0.0, 0.0, 0.0]
+                            ]
+                        ]
                         a2, a3, data = generate_kuramoto_data(n=args.node_num, dt=0.01, steps=15000,
                                                               Pair_strength=Pair_strength,
-                                                              Tri_strength=Tri_strength)
+                                                              Tri_strength=Tri_strength, a2=a2, a3=a3)
                         with open(data_file, "wb") as f:
                             pickle.dump((a2, a3, data), f)
                     data_cache[key] = str(data_file)
@@ -238,7 +260,7 @@ if __name__ == '__main__':
 
                 for node_id in node_ids:
                     # Assign GPU to a node_id in round-robin fashion if GPUs available, else None (CPU).
-                    gpu_id = gpus[node_id % len(gpus)] if gpus else None
+                    gpu_id = random.choice(gpus) if gpus else None
                     fut = exe.submit(worker, node_id, gpu_id, args_dict, data_cache[key], Pair_strength, Tri_strength)
                     futures[fut] = (node_id, gpu_id, Pair_strength, Tri_strength)
 

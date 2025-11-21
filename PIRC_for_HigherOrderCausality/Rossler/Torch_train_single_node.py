@@ -16,13 +16,13 @@ N_test=25
 N_start=1000
 n_trials=100
 
-position=2  # 0,1,2 分别对应 X,Y,Z 三个变量
+position = int(device.split(":")[1])  # 0,1,2 分别对应 X,Y,Z 三个变量
 param_file = f'Parameters/best_params_{"x" if position == 0 else "y" if position == 1 else "z"}.pkl'
 
 # %% 需要用的时候读取
-with open('data/lorenz_data.pkl', 'rb') as f:
-    t, xyz = pickle.load(f)
-X = torch.tensor(xyz.T, dtype=torch.float32, device=device)  # (N, 3)
+with open('data/rossler_data.pkl', 'rb') as f:
+    t, states = pickle.load(f)
+X = torch.tensor(states, dtype=torch.float32, device=device)  # (N, 3)
 X = shift_column_to_first(X, position)
 X = (X - X.mean(dim=0)) / X.std(dim=0)  # 标准化
 X_washout, X_train, Y_train, Y_test = split_dataset(X, N_start, N_washout, N_train, N_test)
@@ -96,7 +96,7 @@ print("Test_Loss with best hyperparameters:", Test_Loss[0])
 # %% Training phase visualization
 fig, axes = plt.subplots(Y_train_predict.shape[1], 1, figsize=(10, 12))
 for i in range(Y_train_predict.shape[1]):
-    axes[i].plot(X_train[-500:, i].cpu().numpy(), label='True')
+    axes[i].plot(Y_train[-500:, i].cpu().numpy(), label='True')
     axes[i].plot(Y_train_predict[-500:, i], label='RC')
 axes[0].set_ylabel('X')
 axes[1].set_ylabel('Y')
@@ -105,6 +105,7 @@ axes[2].set_xlabel('Time Steps (training phase)')
 for ax in axes:
     ax.legend(loc='best')
 plt.tight_layout()
+os.makedirs('fig', exist_ok=True)
 plt.savefig('fig/train_phase.png')
 plt.show()
 

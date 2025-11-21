@@ -3,7 +3,7 @@ import sys
 sys.path.append('/home/caoren/tmp/PIRC_for_HigherOrderCausality')
 from Torch_Library import *
 from Model.PIRC_torch import PIRC_Torch as PIRC
-from Data_gen import generate_kuramoto_data
+from Data_gen import generate_rossler_data
 
 def worker(node_id, gpu_id, args_dict, data_np):
     """
@@ -36,7 +36,7 @@ def worker(node_id, gpu_id, args_dict, data_np):
 
         # Prepare Optuna storage for per-node study to avoid concurrency issues.
         optuna_dir = Path(args_dict.get("optuna_dir", "optuna_studies"))
-        node_dir = optuna_dir / f"N_train_{args_dict.get('N_train')}_Node_num_{args_dict.get('node_num')}_PairStrength_{args_dict.get('Pair_strength')}_TriStrength_{args_dict.get('Tri_strength')}"
+        node_dir = optuna_dir / f"N_train_{args_dict.get('N_train')}"
         node_dir.mkdir(parents=True, exist_ok=True)
         storage_path = node_dir / f"study_node_{node_id}.db"
         storage = f"sqlite:///{storage_path}"
@@ -72,7 +72,7 @@ def worker(node_id, gpu_id, args_dict, data_np):
         today = args_dict.get("today", date.today())
         log_dir = Path("Log") / f"{today}"
         log_dir.mkdir(parents=True, exist_ok=True)
-        log_file = log_dir / f"N_train_{args_dict.get('N_train')}_NodeNum_{args_dict.get('node_num')}_PairStrength_{args_dict.get('Pair_strength')}_TriStrength_{args_dict.get('Tri_strength')}_TrainLog.txt"
+        log_file = log_dir / f"N_train_{args_dict.get('N_train')}_TrainLog.txt"
         lock = FileLock(str(log_file) + ".lock")
         with lock:
             with log_file.open("a", encoding="utf-8") as lf:
@@ -86,7 +86,7 @@ def worker(node_id, gpu_id, args_dict, data_np):
         best_params = study.best_params if study.best_trial is not None else {}
         best_out_dim = best_params.get("out_dim", None)
         best_Normalization = best_params.get("Normalization", None)
-        param_file = f"Parameters/{today}/N_train_{args_dict.get('N_train')}_NodeNum_{args_dict.get('node_num')}_node_{node_id}_PairStrength_{args_dict.get('Pair_strength')}_TriStrength_{args_dict.get('Tri_strength')}_out_dim_{best_out_dim}_UseSin_{args_dict.get('use_Sin')}_Normalization_{best_Normalization}_block_dim{args_dict.get('block_dim')}.pkl"
+        param_file = f"Parameters/{today}/N_train_{args_dict.get('N_train')}_ node_{node_id}_out_dim_{best_out_dim}_UseSin_{args_dict.get('use_Sin')}_Normalization_{best_Normalization}_block_dim{args_dict.get('block_dim')}.pkl"
         with open(param_file, "wb") as pf:
             pickle.dump((best_params), pf)
 
@@ -145,17 +145,15 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("--gpus", type=str, default="0,1,2,3",
                         help='Comma separated GPU ids to use, e.g. "0,1,2,3". If omitted uses CPU.')
-    parser.add_argument("--node_num", type=int, default=10, help="Number of nodes (node_id range)")
-    parser.add_argument("--Pair_strength", type=float, default=0.1)
-    parser.add_argument("--Tri_strength", type=float, default=0.1)
-    parser.add_argument("--block_dim", type=int, default=2)
+    parser.add_argument("--node_num", type=int, default=3, help="Number of nodes (node_id range)")
+    parser.add_argument("--block_dim", type=int, default=1)
     parser.add_argument("--use_Sin", action="store_true")
     parser.add_argument("--n_trials", type=int, default=500)
     parser.add_argument("--n_workers", type=int, default=None,
                         help="Max concurrent workers; defaults to number of GPUs (or 1 if CPU).")
     # parser.add_argument("--OMP_NUM_THREADS", type=int, default=4, help="Per-process OMP_NUM_THREADS")
     # parser.add_argument("--MKL_NUM_THREADS", type=int, default=4, help="Per-process MKL_NUM_THREADS")
-    parser.add_argument("--N_train", type=int, default=10000)
+    parser.add_argument("--N_train", type=int, default=5000)
     args = parser.parse_args()
     in_dim = args.node_num
     ExpandNodes = in_dim + math.comb(in_dim - 1, 2)
@@ -164,20 +162,16 @@ if __name__ == '__main__':
     today = date.today()
 
     # Data file path
-    data_file = Path(
-        f"data/NodeNum_{args.node_num}_PairStrength_{args.Pair_strength}_TriStrength_{args.Tri_strength}.pkl")
+    data_file = Path(f"data/rossler.pkl")
     if data_file.exists():
         with open(data_file, "rb") as f:
-            a2, a3, data = pickle.load(f)
+            t, states = pickle.load(f)
     else:
         # generate_kuramoto_data must be available
-        a2, a3, data = generate_kuramoto_data(n=args.node_num, dt=0.01, steps=20000, Pair_strength=args.Pair_strength,
-                                              Tri_strength=args.Tri_strength)
+        t, states = generate_rossler_data(0, 1000, 0.1, np.array([1.0, 1.0, 1.0]))
         with open(data_file, "wb") as f:
-            pickle.dump((a2, a3, data), f)
-    data_np = np.asarray(data, dtype=np.float32)
-    print("a2:\n", a2)
-    print("a3:\n", a3)
+            pickle.dump((t, states), f)
+    data_np = np.asarray(states, dtype=np.float32)
 
     # GPUs list
     if args.gpus:
@@ -199,8 +193,6 @@ if __name__ == '__main__':
         "use_Sin": args.use_Sin,
         "block_dim": args.block_dim,
         "node_num": args.node_num,
-        "Pair_strength": args.Pair_strength,
-        "Tri_strength": args.Tri_strength,
         "today": today,
         "optuna_dir": "optuna_studies",
         # "OMP_NUM_THREADS": args.OMP_NUM_THREADS,
@@ -211,7 +203,7 @@ if __name__ == '__main__':
         "ExpandNodes": ExpandNodes,
         "N_washout": 100,
         "N_rep": 10,
-        "N_test": 10,
+        "N_test": 25,
         "N_start": 1000,
         "N_train": args.N_train
     }

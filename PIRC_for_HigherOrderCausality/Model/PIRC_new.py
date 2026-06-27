@@ -23,7 +23,7 @@ class PIRC_flatten: # in this version, we mask the reservoir states
             self.ExpandNodes = self.in_dim + math.comb(self.in_dim - 1, 2)+1
         elif Expand == 2:
             self.ExpandNodes = self.in_dim + math.comb(self.in_dim - 1, 2) + math.comb(self.in_dim - 1, 3)+1
-        self.ExpandDim =self.ExpandNodes * self.block_dim
+        # self.ExpandDim =self.ExpandNodes * self.block_dim
         self.Wres = Wres.to(device)
         self.Win = Win.to(device)
         eigs = torch.linalg.eigvals(self.Wres)
@@ -42,34 +42,62 @@ class PIRC_flatten: # in this version, we mask the reservoir states
 
     @torch.no_grad()
     def dataProcess(self, X):
-        B = X.shape[0]
-        bias = torch.ones(B, 1, device=X.device)
-        if self.Expand==2:
-            X = X
-        else:
-            X = torch.remainder(X, 2 * torch.pi)  # 直接修改 X 本身
+        B,D = X.shape
+        # bias = torch.ones(B, 1, device=X.device)
+        # if self.Expand==2:
+        #     X = X
+        # else:
+        #     X = torch.remainder(X, 2 * torch.pi)  # 直接修改 X 本身
         if self.Expand==1:
             x1 = X[:, 0:1]  # (B,1)
-            if self.option == 1: #1,x1,x1x2,x1x3,x1x2x3
-                rest = X[:, 1:]
-                idx = torch.triu_indices(rest.shape[1], rest.shape[1], offset=1, device=X.device)
-                f3 = rest[:, idx[0]] * rest[:, idx[1]] * x1  # (B,K)
-                rest = X[:, 1:] * x1
-            elif self.option == 2: #1,x1,x1x2,x1x3,x1x1x2x3
-                rest = X[:, 1:] * x1
-                idx = torch.triu_indices(rest.shape[1], rest.shape[1], offset=1, device=X.device)
-                f3 = rest[:, idx[0]] * rest[:, idx[1]]   # (B,K)
-            v = torch.cat([bias, x1, rest, f3], dim=1)  # (B,E)
+            rest = X[:, 1:]  # (B,D-1)
+            M = D - 1  # M = D-1
+            ones = torch.ones(B, 1, device=X.device)
+            x1_sq = x1 * x1
+            pair = torch.stack([rest, x1 * rest], dim=2)
+            pair_flat = pair.reshape(B, -1)
+            idx = torch.triu_indices(M, M, offset=1, device=X.device)
+            f_rest_cross = rest[:, idx[0]] * rest[:, idx[1]]  # (B,K)
+            f_high = x1 * f_rest_cross
+            high_order = torch.stack([f_rest_cross, f_high], dim=2)
+            high_order = high_order.reshape(B, -1)
+            v = torch.cat([ones, ones, x1, x1_sq, pair_flat, high_order], dim=1)
             X_proc = v  # (B,E)
-        elif self.Expand==2:
-            x1 = X[:, 0:1]  # (B,1)
-            rest = x1 * X[:, 1:]  # (B, n-1)
-            idx2 = torch.triu_indices(rest.shape[1], rest.shape[1], offset=1, device=X.device)
-            f3 = rest[:, idx2[0]] * rest[:, idx2[1]]  # (B, C(n-1,2))
-            idx3 = torch.combinations(torch.arange(rest.shape[1], device=X.device), r=3)
-            f4 = rest[:, idx3[:, 0]] * rest[:, idx3[:, 1]] * rest[:, idx3[:, 2]]
-            v = torch.cat([torch.ones(B, 1, device=X.device), x1, rest, f3, f4], dim=1)  # (B,E)
-            X_proc = v  # (B,E)
+            # if self.option == 1: #1,x1,x2,x3,x2x3
+            #     rest = X[:, 1:]
+            #     idx = torch.triu_indices(rest.shape[1], rest.shape[1], offset=1, device=X.device)
+            #     f3 = rest[:, idx[0]] * rest[:, idx[1]]   # (B,K)
+            #     rest = X[:, 1:]
+            # elif self.option == 2: #1,x1,x1x2,x1x3,x1x1x2x3
+            #     rest = X[:, 1:] * x1
+            #     idx = torch.triu_indices(rest.shape[1], rest.shape[1], offset=1, device=X.device)
+            #     f3 = rest[:, idx[0]] * rest[:, idx[1]]   # (B,K)
+            # v = torch.cat([bias, x1, rest, f3], dim=1)  # (B,E)
+            # if self.block_dim == 2:
+            #     sin_v = torch.sin(v)
+            #     cos_v = torch.cos(v)
+            #     X_proc = torch.stack((sin_v, cos_v), dim=2).reshape(B, -1)
+            # else:
+            #     X_proc = v  # (B,E)
+        # elif self.Expand==2:
+        #     x1 = X[:, 0:1]  # (B,1)
+        #     rest = x1 * X[:, 1:]  # (B, n-1)
+        #     idx2 = torch.triu_indices(rest.shape[1], rest.shape[1], offset=1, device=X.device)
+        #     f3 = rest[:, idx2[0]] * rest[:, idx2[1]]  # (B, C(n-1,2))
+        #     idx3 = torch.combinations(torch.arange(rest.shape[1], device=X.device), r=3)
+        #     f4 = rest[:, idx3[:, 0]] * rest[:, idx3[:, 1]] * rest[:, idx3[:, 2]]
+        #     v = torch.cat([torch.ones(B, 1, device=X.device), x1, rest, f3, f4], dim=1)  # (B,E)
+        #     X_proc = v  # (B,E)
+        # else:
+        #     x1 = X[:, 0:1]
+        #     rest = X[:, 1:] * x1
+        #     v = torch.cat([torch.ones(B, 1, device=X.device), x1, rest], dim=1)  # (B,E)
+        #     if self.block_dim == 2:
+        #         sin_v = torch.sin(v)
+        #         cos_v = torch.cos(v)
+        #         X_proc = torch.stack((sin_v, cos_v), dim=2).reshape(B, -1)
+        #     else:
+        #         X_proc = v  # (B,E)
         return X_proc
 
     @torch.no_grad()

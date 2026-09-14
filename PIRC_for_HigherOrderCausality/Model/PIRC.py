@@ -251,4 +251,3 @@ class PIRC_flatten: # in this version, we mask the reservoir states
         return Prediction
 
 
-

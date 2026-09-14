@@ -4,6 +4,7 @@ import pandas as pd
 from typing import Tuple
 from scipy.fft import fft, ifft
 from collections import defaultdict
+from joblib import Parallel, delayed
 
 def this(X, Y, ooi, dmax, lam=0.1, rho=1.0, niter=10):
 
@@ -336,6 +337,114 @@ def plot_panel(ax, x, median, q25, q75, q10, q90, color, title):
     ax.set_title(title)
     ax.set_xlabel("Threshold")
     ax.set_ylim(0, 1)
+import numpy as np
+
+def restrict_hypercube_size(X, delta, center=None):
+    """
+    Keep all samples inside a hypercube.
+
+    Parameters
+    ----------
+    X : ndarray, shape (N, T)
+        N variables, T samples (each column is one sample).
+    delta : float
+        Side length of the hypercube.
+    center : ndarray of shape (N,), optional
+        Center of the hypercube.
+        If None, the median of each variable is used.
+
+    Returns
+    -------
+    X_new : ndarray
+        Samples inside the hypercube.
+    ids : ndarray
+        Indices of retained samples.
+    """
+
+    N, T = X.shape
+
+    # Default center: median of each dimension
+    if center is None:
+        center = np.median(X, axis=1, keepdims=True)
+    else:
+        center = np.asarray(center).reshape(N, 1)
+
+    # Offset from the center
+    dX = X - center
+
+    # Check whether every coordinate lies inside [-delta/2, delta/2]
+    inside = np.all(np.abs(dX) <= delta / 2, axis=0)
+
+    ids = np.where(inside)[0]
+
+    return X[:, ids], ids
+
+def this_par_python(X, Y, ooi, dmax, lam=0.1, rho=1.0, niter=10, n_jobs=-1):
+    if X.shape != Y.shape:
+        print("Dimensions of states and derivatives do not match.")
+        return None
+
+    n, T = X.shape
+
+    theta, d = get_thetad(X, dmax)
+
+    idx_mon = {}
+    for k in range(d.shape[0]):
+        mon = d[k, d[k, :] != 0].astype(int).tolist()
+        if len(mon) == len(set(mon)):
+            idx_mon[k] = sorted(mon)
+
+    def run_one_node(i):
+        coeff_i, err_i = my_sindy(
+            theta,
+            Y[i:i+1, :],
+            lam=lam,
+            rho=rho,
+            niter=niter
+        )
+        return i, coeff_i.reshape(-1), err_i
+
+    results = Parallel(n_jobs=n_jobs)(
+        delayed(run_one_node)(i)
+        for i in range(n)
+    )
+
+    coeff = {}
+    err = 0.0
+
+    for i, coeff_i, err_i in results:
+        coeff[i] = coeff_i
+        err += float(err_i)
+
+    relerr = err / (np.linalg.norm(Y, ord=1) + 1e-12)
+
+    Ainf = {
+        o: np.zeros((0, o + 1))
+        for o in range(1, dmax + 2)
+    }
+
+    for i in range(n):
+        c = coeff[i]
+
+        for j in range(len(c)):
+            if j not in idx_mon:
+                continue
+
+            mon = idx_mon[j]
+
+            if i in mon:
+                continue
+
+            weight = c[j]
+            if abs(weight) <= 1e-8:
+                continue
+
+            order = len(mon) + 1
+
+            row = np.array([i] + mon + [weight], dtype=float).reshape(1, -1)
+            Ainf[order] = np.vstack([Ainf[order], row])
+
+    return Ainf, coeff, relerr
 
 if __name__ == "__main__":
     main()

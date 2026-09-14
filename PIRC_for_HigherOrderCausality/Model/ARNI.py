@@ -6,7 +6,7 @@ import numpy as np
 from sklearn.metrics import roc_curve, auc
 from itertools import combinations
 
-def ARNI(X, Y, BASIS, ORDER, NODE, connectivity,th=0.0001):
+def ARNI(X, Y, BASIS, ORDER, NODE, connectivity=None,th=0.0001):
     # X：input time series data, shape (N, T)
     # Y: derivative of X, shape (N, T)
     # BASIS: type of basis expansion
@@ -178,115 +178,4 @@ def run_node(NODE, typ, base, order, expanded_cache, Y_T, T_Matrix=None):
     )
 
     return NODE, vec
-
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--node_num', type=int, default=10, help='Number of nodes in the system')
-    parser.add_argument('--Pair_strength', type=float, default=0.4, help='Pairwise interaction strength') #1
-    parser.add_argument('--Tri_strength', type=float, default=0.4, help='Three-way interaction strength') #1
-    parser.add_argument("--N_train", type=int, default=10000)
-    parser.add_argument("--N_test", type=int, default=100)
-    parser.add_argument("--N_washout", type=int, default=100)
-    parser.add_argument("--N_start", type=int, default=1000)
-    parser.add_argument("--probability", type=float, default=0.1) #0.02
-    parser.add_argument("--dt", type=float, default=0.01)
-    args = parser.parse_args()
-    set_seed(42)
-
-    ExpandNodes = args.node_num + math.comb(args.node_num - 1, 2)
-
-    data, a2, a3 = load_or_generate_kuramoto(args)
-    data = data[args.N_start:,]
-
-    T_Matrix = np.zeros((args.node_num, ExpandNodes))
-    T_Matrix[:, :args.node_num] = (a2 != 0).astype(int)
-    for i in range(args.node_num):
-        com_list = list(combinations([x for x in range(args.node_num) if x != i], 2))
-        for index, (j, k) in enumerate(com_list):
-            T_Matrix[i, args.node_num + index] = int(a3[i][j][k] != 0)
-    print("ground_truth", T_Matrix)
-
-    X1 = data[:-1, :]
-    X2 = data[1:, :]
-    X = (X1+X2)*0.5
-    # X = data[:-1, :] % (2 * np.pi)
-    Y = (data[1:, :]- data[:-1, :])/args.dt
-
-    n = X.shape[1]
-    fig, axes = plt.subplots(n, 1, figsize=(10, 3 * n), sharex=True)
-    for i in range(n):
-        axes[i].plot(X[:, i])
-        axes[i].set_ylabel(f'Node {i} Phase')
-        axes[i].set_title(f'Node {i}')
-    axes[-1].set_xlabel('Time step')
-    plt.tight_layout()
-    # plt.show()
-
-    fig, axes = plt.subplots(n, 1, figsize=(10, 3 * n), sharex=True)
-    for i in range(n):
-        axes[i].plot(Y[:, i])
-        axes[i].set_ylabel(f'Node {i} Velocity')
-        axes[i].set_title(f'Node {i}')
-        axes[i].set_ylim(-5, 5)
-    axes[-1].set_xlabel('Time step')
-    plt.tight_layout()
-    # plt.show()
-
-    # 3) Run THIS
-    lam_list1 = np.logspace(-1, 1, 50)  # 大 lambda 粗扫
-    lam_list2 = np.logspace(-8, -1, 200)  # 小 lambda 密集扫
-    lam_list = np.concatenate([lam_list1, lam_list2])[::-1]  # 倒序，先大 lambda
-    best_lam, best_rho, best_auc, auc_grid = tune_lam_rho(
-        X, Y, ooi, dmax, T_Matrix, args, ExpandNodes,
-        lam_list=lam_list,  # λ 从 1e-6 到 10，共 15 个候选
-        rho_list=np.logspace(-6, 0, 15),  # ρ 从 1e-6 到 1，共 15 个候选
-        niter=50
-    )
-
-    Ainf, coeff, relerr = this(X.T, Y.T, ooi, dmax, lam=best_lam, rho=best_rho, niter=50)
-
-    T_from_Ainf = np.zeros((args.node_num, ExpandNodes))
-    com_dict = {}
-    for i in range(args.node_num):
-        com_list = list(combinations([x for x in range(args.node_num) if x != i], 2))
-        com_dict[i] = {tuple(c): idx for idx, c in enumerate(com_list)}
-    for order, mat in Ainf.items():
-        if order == 2:
-            for item in Ainf[order]:
-                i0, j0, index = item[0], item[1], item[2]
-                T_from_Ainf[int(i0), int(j0)] = abs(index)
-        elif order == 3:
-            for item in Ainf[order]:
-                i0, j0, k0, index = item[0], item[1], item[2], item[3]
-                # com_list = list(combinations([x for x in range(args.node_num) if x != i0], 2))
-                idx = com_dict[i0][tuple(sorted((j0, k0)))]
-                T_from_Ainf[int(i0), int(args.node_num + idx)] = abs(index)
-    # AUC = ranking_auc_ALL(T_from_Ainf, T_Matrix)
-    # print("AUC:", AUC)
-
-    N = args.node_num
-    mask = np.ones_like(T_Matrix, dtype=bool)
-    mask[:N, :N] &= ~np.eye(N, dtype=bool)
-    y_true = T_Matrix[mask]
-    y_score = T_from_Ainf[mask]
-    # y_true = T_Matrix.flatten()
-    # y_score = T_from_Ainf.flatten()
-
-    fpr, tpr, thresholds = roc_curve(y_true, y_score)
-    roc_auc = auc(fpr, tpr)
-
-    plt.figure()
-    plt.plot(fpr, tpr, label=f"AUC = {roc_auc:.4f}")
-    plt.plot([0, 1], [0, 1], linestyle="--")  # 随机分类器
-    plt.xlabel("False Positive Rate")
-    plt.ylabel("True Positive Rate")
-    plt.title("ROC Curve")
-    plt.legend()
-    plt.grid()
-    plt.show()
-
-    print("AUC:", roc_auc)
-
-
-
 

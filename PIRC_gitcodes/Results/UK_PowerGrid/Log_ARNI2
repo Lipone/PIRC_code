@@ -1,0 +1,73 @@
+nohup: ignoring input
+[I 2026-07-10 16:10:40,258] A new study created in memory with name: GridPower_ARNI2
+ground_truth [[0. 0. 1. ... 0. 0. 0.]
+ [0. 0. 1. ... 0. 0. 0.]
+ [0. 0. 0. ... 0. 0. 0.]
+ ...
+ [0. 0. 0. ... 0. 0. 0.]
+ [0. 0. 0. ... 0. 0. 0.]
+ [0. 0. 0. ... 0. 0. 0.]]
+pair: 165
+Tri: 6
+[I 2026-07-10 16:12:23,049] Trial 0 finished with value: 0.4993305504322052 and parameters: {'th': 1.3966663605676864e-05, 'type': 'mul', 'basis_order': 2}. Best is trial 0 with value: 0.4993305504322052.
+[I 2026-07-10 16:12:54,355] Trial 1 finished with value: 0.5290041565895081 and parameters: {'th': 3.193441922611869e-05, 'type': 'mul', 'basis_order': 3}. Best is trial 1 with value: 0.5290041565895081.
+[I 2026-07-10 16:13:13,392] Trial 2 finished with value: 0.5203516483306885 and parameters: {'th': 6.64939355739174e-05, 'type': 'mul', 'basis_order': 5}. Best is trial 1 with value: 0.5290041565895081.
+[I 2026-07-10 16:13:31,689] Trial 3 finished with value: 0.5203589200973511 and parameters: {'th': 9.676682309009652e-05, 'type': 'mul', 'basis_order': 5}. Best is trial 1 with value: 0.5290041565895081.
+[I 2026-07-10 16:15:14,089] Trial 4 finished with value: 0.4993422329425812 and parameters: {'th': 1.5607573935907112e-05, 'type': 'mul', 'basis_order': 2}. Best is trial 1 with value: 0.5290041565895081.
+[I 2026-07-10 16:15:34,270] Trial 5 finished with value: 0.526172399520874 and parameters: {'th': 6.421880679284523e-05, 'type': 'mul', 'basis_order': 4}. Best is trial 1 with value: 0.5290041565895081.
+[I 2026-07-10 16:16:00,600] Trial 6 finished with value: 0.49971458315849304 and parameters: {'th': 6.985275928399338e-05, 'type': 'add', 'basis_order': 2}. Best is trial 1 with value: 0.5290041565895081.
+[I 2026-07-10 16:17:30,910] Trial 7 finished with value: 0.5232570171356201 and parameters: {'th': 2.3860409077696097e-05, 'type': 'mul', 'basis_order': 5}. Best is trial 1 with value: 0.5290041565895081.
+[I 2026-07-10 16:17:46,202] Trial 8 finished with value: 0.5086312890052795 and parameters: {'th': 5.117679025111502e-05, 'type': 'add', 'basis_order': 4}. Best is trial 1 with value: 0.5290041565895081.
+[I 2026-07-10 16:19:32,550] Trial 9 finished with value: 0.4993462860584259 and parameters: {'th': 1.5996469520204184e-05, 'type': 'mul', 'basis_order': 2}. Best is trial 1 with value: 0.5290041565895081.
+[I 2026-07-10 16:19:51,197] Trial 10 finished with value: 0.5203567147254944 and parameters: {'th': 7.943889503463577e-05, 'type': 'mul', 'basis_order': 5}. Best is trial 1 with value: 0.5290041565895081.
+[I 2026-07-10 16:20:11,474] Trial 11 finished with value: 0.5261713266372681 and parameters: {'th': 5.9099909157968376e-05, 'type': 'mul', 'basis_order': 4}. Best is trial 1 with value: 0.5290041565895081.
+[I 2026-07-10 16:20:28,953] Trial 12 finished with value: 0.49988853931427 and parameters: {'th': 5.997284300313287e-05, 'type': 'add', 'basis_order': 5}. Best is trial 1 with value: 0.5290041565895081.
+[I 2026-07-10 16:20:51,097] Trial 13 finished with value: 0.4997881054878235 and parameters: {'th': 2.8159947738299822e-05, 'type': 'add', 'basis_order': 3}. Best is trial 1 with value: 0.5290041565895081.
+[I 2026-07-10 18:48:47,806] Trial 14 finished with value: 0.49961185455322266 and parameters: {'th': 1.8741701461988568e-05, 'type': 'add', 'basis_order': 5}. Best is trial 1 with value: 0.5290041565895081.
+[trial 0] T_use=99, start=0, end=99, AUC=0.4993
+[trial 0] T_use=99, length_best_auc=0.4993, best_window=(0, 99)
+[trial 0] Early stop at T=99, global_best_auc=0.4993, best_T_use=99
+[trial 1] T_use=99, start=0, end=99, AUC=0.5290
+[trial 1] T_use=99, length_best_auc=0.5290, best_window=(0, 99)
+[trial 1] Early stop at T=99, global_best_auc=0.5290, best_T_use=99
+[trial 2] T_use=99, start=0, end=99, AUC=0.5204
+[trial 2] T_use=99, length_best_auc=0.5204, best_window=(0, 99)
+[trial 2] Early stop at T=99, global_best_auc=0.5204, best_T_use=99
+[trial 3] T_use=99, start=0, end=99, AUC=0.5204
+[trial 3] T_use=99, length_best_auc=0.5204, best_window=(0, 99)
+[trial 3] Early stop at T=99, global_best_auc=0.5204, best_T_use=99
+[trial 4] T_use=99, start=0, end=99, AUC=0.4993
+[trial 4] T_use=99, length_best_auc=0.4993, best_window=(0, 99)
+[trial 4] Early stop at T=99, global_best_auc=0.4993, best_T_use=99
+[trial 5] T_use=99, start=0, end=99, AUC=0.5262
+[trial 5] T_use=99, length_best_auc=0.5262, best_window=(0, 99)
+[trial 5] Early stop at T=99, global_best_auc=0.5262, best_T_use=99
+[trial 6] T_use=99, start=0, end=99, AUC=0.4997
+[trial 6] T_use=99, length_best_auc=0.4997, best_window=(0, 99)
+[trial 6] Early stop at T=99, global_best_auc=0.4997, best_T_use=99
+[trial 7] T_use=99, start=0, end=99, AUC=0.5233
+[trial 7] T_use=99, length_best_auc=0.5233, best_window=(0, 99)
+[trial 7] Early stop at T=99, global_best_auc=0.5233, best_T_use=99
+[trial 8] T_use=99, start=0, end=99, AUC=0.5086
+[trial 8] T_use=99, length_best_auc=0.5086, best_window=(0, 99)
+[trial 8] Early stop at T=99, global_best_auc=0.5086, best_T_use=99
+[trial 9] T_use=99, start=0, end=99, AUC=0.4993
+[trial 9] T_use=99, length_best_auc=0.4993, best_window=(0, 99)
+[trial 9] Early stop at T=99, global_best_auc=0.4993, best_T_use=99
+[trial 10] T_use=99, start=0, end=99, AUC=0.5204
+[trial 10] T_use=99, length_best_auc=0.5204, best_window=(0, 99)
+[trial 10] Early stop at T=99, global_best_auc=0.5204, best_T_use=99
+[trial 11] T_use=99, start=0, end=99, AUC=0.5262
+[trial 11] T_use=99, length_best_auc=0.5262, best_window=(0, 99)
+[trial 11] Early stop at T=99, global_best_auc=0.5262, best_T_use=99
+[trial 12] T_use=99, start=0, end=99, AUC=0.4999
+[trial 12] T_use=99, length_best_auc=0.4999, best_window=(0, 99)
+[trial 12] Early stop at T=99, global_best_auc=0.4999, best_T_use=99
+[trial 13] T_use=99, start=0, end=99, AUC=0.4998
+[trial 13] T_use=99, length_best_auc=0.4998, best_window=(0, 99)
+[trial 13] Early stop at T=99, global_best_auc=0.4998, best_T_use=99
+[trial 14] T_use=99, start=0, end=99, AUC=0.4996
+[trial 14] T_use=99, length_best_auc=0.4996, best_window=(0, 99)
+[trial 14] Early stop at T=99, global_best_auc=0.4996, best_T_use=99
+[I 2026-07-10 18:49:08,437] Trial 15 finished with value: 0.49988505244255066 and parameters: {'th': 4.230032335264729e-05, 'type': 'add', 'basis_order': 5}. Best is trial 1 with value: 0.5290041565895081.
+[I 2026-07-10 18:50:34,718] Trial 16 finished with value: 0.5232586860656738 and parameters: {'th': 2.687831931358927e-05, 'type': 'mul', 'basis_order': 5}. Best is trial 1 with value: 0.5290041565895081.
